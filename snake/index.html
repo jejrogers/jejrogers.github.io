@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Snake</title>
+        <style>
+            body {
+                touch-action: none;
+                background: black;
+                padding: 0;
+                margin: 0;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js"></script>
+    </head>
+    <body>
+        <script>
+            let x = [];
+            let y = [];
+            const segNum = 1000;
+            const segLength = 1; // segNum * segLength gives length of snake
+            const fr = 60;
+            const loops = 3; // fr * loops must divide 360
+            for (let i = 0; i < segNum; i++) {
+                x[i] = 0;
+                y[i] = 0;
+            };
+            
+            function setup() {
+                frameRate(fr);
+                createCanvas(windowWidth, windowHeight);
+                noStroke();
+            };
+            
+            function draw() {
+                background(0, 0, 0);
+                dragSegment(0, mouseX, mouseY);
+                for (let i = 0; i < x.length - 1; i++) {
+                    let offset = round(360 * (i + 1) / x.length);
+                    let index = (offset + frameCount * 360 / (fr * loops)) % 360;
+                    let c = color(`hsl(${index}, 100%, 50%)`);
+                    fill(c);
+                    dragSegment(i + 1, x[i], y[i]);
+                };
+            };
+            
+            function keyPressed() {
+                if (key == "s") {
+                    if (isLooping()) {
+                        noLoop();
+                    } else {
+                        loop();
+                    };
+                };
+            };
+            
+            function dragSegment(i, xin, yin) {
+                const dx = xin - x[i];
+                const dy = yin - y[i];
+                const angle = atan2(dy, dx);
+                x[i] = xin - cos(angle) * segLength;
+                y[i] = yin - sin(angle) * segLength;
+                segment(x[i], y[i], angle);
+            };
+            
+            function segment(x, y, a) {
+                push();
+                translate(x, y);
+                rotate(a);
+                rect(0, 0, segLength, segLength * 5);
+                pop();
+            };
+        </script>
+    </body>
+</html>
